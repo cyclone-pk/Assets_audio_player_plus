@@ -54,6 +54,9 @@ flutter run -d <iOS>      # iOS
 
 ## Required checks before pushing
 
+> ℹ️ Automated CI is not wired up yet (to be added later). Run these locally
+> before opening a PR and paste the results into the PR description.
+
 ```bash
 dart format --set-exit-if-changed .
 flutter analyze
@@ -62,13 +65,11 @@ flutter test
 (cd example && flutter analyze)
 ```
 
-CI runs the same commands plus:
+Recommended additional smoke tests:
 
-- `flutter build web --release` (JS)
-- `flutter build web --wasm` (WebAssembly)
-- `flutter build apk --debug` (Android)
-
-A PR cannot merge until CI is green.
+- `cd example && flutter build web --release`
+- `cd example && flutter build web --wasm`
+- `cd example && flutter build apk --debug`
 
 ## Testing expectations
 
@@ -104,7 +105,8 @@ you touch `assets_audio_player_plus_web/`, test both `flutter run -d chrome` and
 
 ## Review process
 
-1. CI must be green.
+1. Paste the output of the local checks (see "Required checks before pushing")
+   into the PR description.
 2. At least one approving review from a maintainer (see CODEOWNERS).
 3. CODEOWNERS are notified automatically on PRs touching their directories.
 4. Maintainer handles the merge and any version bump — do not bump the

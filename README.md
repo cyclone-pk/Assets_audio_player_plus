@@ -1127,26 +1127,25 @@ Linux / Windows where applicable), a PR is expected to:
 - For web changes, test both DDC (`flutter run -d chrome`) and **WASM**
   (`flutter build web --wasm`).
 
-### CI & review gates
+### Review gates
 
-Every PR runs an automated pipeline before a human looks at it. See
-[`.github/workflows/ci.yml`](./.github/workflows/ci.yml) for the exact steps,
-but the checks include:
+> ℹ️ Automated CI (GitHub Actions) is not wired up yet — it will be added in
+> a future release. Until then, the following must be **run manually** by
+> the contributor before requesting review, and verified by a maintainer
+> on merge.
 
-- `dart format` (formatting must match)
+Required checks (same commands CI will eventually run):
+
+- `dart format --set-exit-if-changed .` (formatting must match)
 - `flutter analyze` on the plugin, the web package, and the example
 - `flutter test`
-- `example/` builds for web (JS + WASM) and Android
-- Dependabot keeps dependencies current
+- `example/` builds cleanly for web (JS + WASM) and Android
 
-In addition:
+Review process:
 
-- Branch protection on `master` requires **all CI checks to pass** and **at
-  least one approving review** from a maintainer before merge.
+- At least one approving review from a maintainer before merge.
 - The CODEOWNERS file (`.github/CODEOWNERS`) routes reviews to the
   responsible maintainer automatically.
-- External contributor PRs run with restricted secrets — release steps only
-  fire after a maintainer approves.
 
 ### Releases
 
