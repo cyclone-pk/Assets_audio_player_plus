@@ -1,3 +1,20 @@
+## 3.2.0 — `assets_audio_player_plus_web` fork
+
+First release of the web implementation under the `_plus` name.
+
+- Renamed from `assets_audio_player_web` to `assets_audio_player_plus_web`.
+- `implements: assets_audio_player_plus` so Flutter's federated plugin
+  resolver wires it up automatically.
+- Migrated `dart:html` → `package:web` + `dart:js_interop` so the plugin
+  compiles to both JS (`flutter run -d chrome`) and WebAssembly
+  (`flutter build web --wasm`).
+- `WebPlayerHtml.stop()` now fully detaches the old `<audio>` element
+  (clears `src`, calls `load()`, nulls the reference) — prevents overlapping
+  audio on rapid `open()`/`replaceAt()` calls.
+- `findAssetPath()` URL-encodes each path segment, so asset filenames with
+  spaces or unicode resolve correctly in the browser.
+- SDK / Flutter constraints bumped to Dart 3.3+, Flutter 3.16+.
+
 ## 3.1.1
 
 - fix startup crash issue for some Android devices.
