@@ -1,13 +1,40 @@
-# 🎧 assets_audio_player 🔊
+# 🎧 assets_audio_player_plus 🔊
 
-[![pub package](https://img.shields.io/pub/v/assets_audio_player.svg)](https://pub.dartlang.org/packages/assets_audio_player)
+[![pub package](https://img.shields.io/pub/v/assets_audio_player_plus.svg)](https://pub.dartlang.org/packages/assets_audio_player_plus)
 <a href="https://github.com/Solido/awesome-flutter">
 <img alt="Awesome Flutter" src="https://img.shields.io/badge/Awesome-Flutter-blue.svg?longCache=true&style=flat" />
 </a>
 <img src="https://img.shields.io/badge/platform-android%20%7C%20ios%20%7C%20macos%20%7C%20web%20-%23989898" />
 
-[![Codemagic build status](https://api.codemagic.io/apps/5ed8002fe1907b001c67db52/5ed8002fe1907b001c67db51/status_badge.svg)](https://codemagic.io/apps/5ed8002fe1907b001c67db52/5ed8002fe1907b001c67db51/latest_build)
-[![CodeFactor](https://www.codefactor.io/repository/github/florent37/flutter-assetsaudioplayer/badge)](https://www.codefactor.io/repository/github/florent37/flutter-assetsaudioplayer)
+[![Hire me on Fiverr](https://img.shields.io/badge/Hire%20me%20on-Fiverr-1DBF73?style=for-the-badge&logo=fiverr&logoColor=white)](https://www.fiverr.com/toptutorial270)
+
+> ### 📢 Project status
+> This repository is a **continuation** of the original
+> [`assets_audio_player`](https://github.com/florent37/Flutter-AssetsAudioPlayer)
+> plugin by Florent Champigny. It is actively maintained by **Zakria Khan**.
+>
+> Recent work includes restoring web support (migrated from `dart:html` to
+> `package:web` + `dart:js_interop` for WebAssembly compatibility), modernizing
+> the example app to Material 3, and fixing a number of long-standing bugs.
+>
+> **Pull requests are welcome.** Please read
+> [CONTRIBUTING.md](./CONTRIBUTING.md) before opening one.
+>
+> ### ✅ Platform test status
+>
+> | Platform | Status | Notes |
+> |---|---|---|
+> | 🌐 Web (Chrome, JS)   | ✅ Tested | All 14 demos verified end-to-end |
+> | 🌐 Web (WASM)         | ✅ Tested | `flutter build web --wasm` clean |
+> | 🤖 Android            | ✅ Tested | Emulator SDK 36, API channels all OK |
+> | 🍎 iOS                | ⏳ Pending | To be tested soon |
+> | 🖥️ macOS              | ⏳ Pending | To be tested soon |
+> | 🐧 Linux              | ⏳ Pending | Community contributions welcome |
+> | 🪟 Windows            | ⏳ Pending | Community contributions welcome |
+>
+> 📦 Repo: [github.com/cyclone-pk/assets_audio_player_plus](https://github.com/cyclone-pk/assets_audio_player_plus)
+>
+> Found a bug on a tested platform? [Open an issue](https://github.com/cyclone-pk/assets_audio_player_plus/issues) with the demo that fails and your `flutter doctor -v` output.
 
 Play music/audio stored in assets files (simultaneously) directly from Flutter (android / ios / web / macos).
 
@@ -29,14 +56,18 @@ AssetsAudioPlayer.newPlayer().open(
 );
 ```
 
-[![sample1](./medias/sample1.png)](https://github.com/florent37/Flutter-AssetsAudioPlayer)
-[![sample1](./medias/sample2.png)](https://github.com/florent37/Flutter-AssetsAudioPlayer)
+<p align="center">
+  <img src="./medias/s1.png" alt="Launcher" width="23%" />
+  <img src="./medias/s2.png" alt="Playlist player" width="23%" />
+  <img src="./medias/s3.png" alt="Live stream" width="23%" />
+  <img src="./medias/s4.png" alt="Insert / replace" width="23%" />
+</p>
 
 # 📥 Import
 
 ```yaml
 dependencies:
-  assets_audio_player: ^3.0.8
+  assets_audio_player_plus: ^3.2.0
 ```
 
 **Works with `flutter: ">=3.3.0"`, be sure to upgrade your sdk**
@@ -455,9 +486,9 @@ assetsAudioPlayer.stop();
 
 # Notifications
 
-[![notification](./medias/notification_android.png)](https://github.com/florent37/Flutter-AssetsAudioPlayer)
+[![notification](./medias/notification_android.png)](https://github.com/cyclone-pk/assets_audio_player_plus)
 
-[![notification](./medias/notification_iOS.png)](https://github.com/florent37/Flutter-AssetsAudioPlayer)
+[![notification](./medias/notification_iOS.png)](https://github.com/cyclone-pk/assets_audio_player_plus)
 
 on iOS, it will use `MPNowPlayingInfoCenter`
 
@@ -688,7 +719,9 @@ assetsAudioPlayer.playlistPlayAtIndex(1);
 
 If you want a more flutter way to play audio, try the `AudioWidget` !
 
-[![sample](./medias/audio_widget.gif)](https://github.com/florent37/Flutter-AssetsAudioPlayer)
+<p align="center">
+  <img src="./medias/audio_widget.png" alt="AudioWidget demo" width="45%" />
+</p>
 
 ```dart
 //inside a stateful widget
@@ -1061,3 +1094,73 @@ Complete `Runner/DebugProfile.entitlements`
 # 🎶 Musics
 
 All musics used in the samples came from https://www.freemusicarchive.org/
+
+# 🤝 Contributing
+
+Contributions are welcome — bug fixes, features, docs, tests, and examples.
+
+### Workflow
+
+1. **Open an issue first** for anything larger than a small fix, so we can agree
+   on scope before you spend time on a PR.
+2. **Fork & branch** off `master`. Use a descriptive branch name
+   (`fix/web-double-audio`, `feat/pitch-on-ios`, `docs/contributing`).
+3. **Keep the PR focused**. One concern per PR — mixing a refactor with a bug
+   fix makes review much harder.
+4. **Run the checks locally** before pushing:
+   ```bash
+   dart format --set-exit-if-changed .
+   flutter analyze
+   flutter test
+   cd example && flutter analyze
+   ```
+5. **Open the PR** against `master`. The PR template will ask you to describe
+   what changed, why, how you tested it, and on which platforms.
+
+### What "comprehensive testing" means here
+
+Because this package ships on five platforms (Android / iOS / macOS / Web /
+Linux / Windows where applicable), a PR is expected to:
+
+- Add or update **unit tests** in `test/` for any non-trivial Dart logic.
+- Add or update the **example app** (`example/`) when changing a public API,
+  so the change is runnable end-to-end.
+- For platform-specific changes, include a short **manual test plan** in the
+  PR description listing every platform you ran it on, with the Flutter
+  version (`flutter --version` output).
+- For web changes, test both DDC (`flutter run -d chrome`) and **WASM**
+  (`flutter build web --wasm`).
+
+### CI & review gates
+
+Every PR runs an automated pipeline before a human looks at it. See
+[`.github/workflows/ci.yml`](./.github/workflows/ci.yml) for the exact steps,
+but the checks include:
+
+- `dart format` (formatting must match)
+- `flutter analyze` on the plugin, the web package, and the example
+- `flutter test`
+- `example/` builds for web (JS + WASM) and Android
+- Dependabot keeps dependencies current
+
+In addition:
+
+- Branch protection on `master` requires **all CI checks to pass** and **at
+  least one approving review** from a maintainer before merge.
+- The CODEOWNERS file (`.github/CODEOWNERS`) routes reviews to the
+  responsible maintainer automatically.
+- External contributor PRs run with restricted secrets — release steps only
+  fire after a maintainer approves.
+
+### Releases
+
+Releases are cut from `master` by a maintainer: bump the version in
+`pubspec.yaml`, update `CHANGELOG.md`, tag `vX.Y.Z`, and publish to pub.dev.
+Please **do not** bump the version in a PR yourself — that's a maintainer
+step so the changelog stays coherent.
+
+### Code of conduct
+
+Be kind. No harassment, no personal attacks. Disagree with ideas, not
+people. Maintainers reserve the right to close or lock threads that get
+heated.

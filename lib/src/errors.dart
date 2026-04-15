@@ -1,3 +1,5 @@
+// ignore_for_file: constant_identifier_names
+
 import 'assets_audio_player.dart';
 import 'player_group.dart';
 

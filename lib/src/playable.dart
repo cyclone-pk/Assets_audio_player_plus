@@ -2,7 +2,7 @@
 
 import 'dart:convert';
 
-import 'package:assets_audio_player/assets_audio_player.dart';
+import 'package:assets_audio_player_plus/assets_audio_player.dart';
 import 'package:flutter/foundation.dart';
 import 'package:uuid/uuid.dart';
 
@@ -323,9 +323,9 @@ class Audio extends Playable {
       extra: extra,
       image: image,
     );
-    super.currentlyOpenedIn.forEach((playerEditor) {
+    for (final playerEditor in super.currentlyOpenedIn) {
       playerEditor.onAudioMetasUpdated(this);
-    });
+    }
   }
 
   Audio copyWith({
@@ -334,6 +334,7 @@ class Audio extends Playable {
     AudioType? audioType,
     Metas? metas,
     double? playSpeed,
+    double? pitch,
     Map<String, String>? headers,
     bool? cached,
     DrmConfiguration? drmConfiguration
@@ -345,6 +346,7 @@ class Audio extends Playable {
       metas: metas ?? _metas,
       headers: headers ?? _networkHeaders,
       playSpeed: playSpeed ?? this.playSpeed,
+      pitch: pitch ?? this.pitch,
       cached: cached ?? this.cached,
       drmConfiguration: drmConfiguration??this.drmConfiguration
     );
@@ -388,9 +390,9 @@ class Playlist extends Playable {
   Playlist add(Audio audio) {
     audios.add(audio);
     final index = audios.length - 1;
-    super.currentlyOpenedIn.forEach((playerEditor) {
+    for (final playerEditor in super.currentlyOpenedIn) {
       playerEditor.onAudioAddedAt(index);
-    });
+    }
     return this;
   }
 
@@ -398,9 +400,9 @@ class Playlist extends Playable {
     if (index >= 0) {
       if (index < audios.length) {
         audios.insert(index, audio);
-        super.currentlyOpenedIn.forEach((playerEditor) {
+        for (final playerEditor in super.currentlyOpenedIn) {
           playerEditor.onAudioAddedAt(index);
-        });
+        }
       } else {
         return add(audio);
       }
@@ -414,9 +416,9 @@ class Playlist extends Playable {
       final oldElement = audios.elementAt(index);
       final newElement = replacer(oldElement);
       audios[index] = newElement;
-      super.currentlyOpenedIn.forEach((playerEditor) {
+      for (final playerEditor in super.currentlyOpenedIn) {
         playerEditor.onAudioReplacedAt(index, keepPlayingPositionIfCurrent);
-      });
+      }
     }
     return this;
   }
@@ -429,18 +431,18 @@ class Playlist extends Playable {
   bool remove(Audio audio) {
     final index = audios.indexOf(audio);
     final removed = audios.remove(audio);
-    super.currentlyOpenedIn.forEach((playerEditor) {
+    for (final playerEditor in super.currentlyOpenedIn) {
       playerEditor.onAudioRemovedAt(index);
-    });
+    }
     // here maybe stop the player if playing this index
     return removed;
   }
 
   Audio removeAtIndex(int index) {
     final removedAudio = audios.removeAt(index);
-    super.currentlyOpenedIn.forEach((playerEditor) {
+    for (final playerEditor in super.currentlyOpenedIn) {
       playerEditor.onAudioRemovedAt(index);
-    });
+    }
     return removedAudio;
   }
 

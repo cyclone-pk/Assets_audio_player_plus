@@ -1,0 +1,14 @@
+# Default owner for everything in the repo. All pull requests are routed here
+# for review automatically. Add more rows below to hand specific directories
+# (e.g. iOS, Android native code) to co-maintainers.
+
+*                              @zakria
+
+# Platform-specific hotspots — claim them when co-maintainers appear.
+# /android/                    @android-maintainer
+# /ios/                        @ios-maintainer
+# /macos/                      @macos-maintainer
+/assets_audio_player_plus_web/      @zakria
+/lib/                          @zakria
+/example/                      @zakria
+/.github/                      @zakria

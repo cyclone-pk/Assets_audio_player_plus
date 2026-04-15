@@ -1,3 +1,5 @@
+// ignore_for_file: constant_identifier_names
+
 import 'dart:async';
 import 'dart:io';
 import 'dart:math';
@@ -19,7 +21,7 @@ import 'playable.dart';
 import 'playing.dart';
 import 'loop.dart';
 import 'errors.dart';
-import 'PhoneStrategy.dart';
+import 'phone_strategy.dart';
 import 'network_settings.dart';
 
 export 'applifecycle.dart';
@@ -28,15 +30,15 @@ export 'playable.dart';
 export 'playing.dart';
 export 'loop.dart';
 export 'errors.dart';
-export 'PhoneStrategy.dart';
+export 'phone_strategy.dart';
 
-const bool _DEFAULT_AUTO_START = true;
-const bool _DEFAULT_RESPECT_SILENT_MODE = false;
-const bool _DEFAULT_SHOW_NOTIFICATION = false;
-const PlayInBackground _DEFAULT_PLAY_IN_BACKGROUND = PlayInBackground.enabled;
-const HeadPhoneStrategy _DEFAULT_HEADPHONE_STRATEGY = HeadPhoneStrategy.none;
-const LoopMode _DEFAULT_LOOP_MODE = LoopMode.none;
-const String _DEFAULT_PLAYER = 'DEFAULT_PLAYER';
+const bool _defaultAutoStart = true;
+const bool _defaultRespectSilentMode = false;
+const bool _defaultShowNotification = false;
+const PlayInBackground _defaultPlayInBackground = PlayInBackground.enabled;
+const HeadPhoneStrategy _defaultHeadphoneStrategy = HeadPhoneStrategy.none;
+const LoopMode _defaultLoopMode = LoopMode.none;
+const String _defaultPlayer = 'DEFAULT_PLAYER';
 
 const String METHOD_POSITION = 'player.position';
 const String METHOD_VOLUME = 'player.volume';
@@ -75,7 +77,9 @@ class PlayerEditor {
       }
       assetsAudioPlayer._updatePlaylistIndexes();
       if (assetsAudioPlayer._playlist!.playlistIndex == index) {
-        assetsAudioPlayer._openPlaylistCurrent();
+        final isPlaying =
+            assetsAudioPlayer.isPlaying.valueOrNull ?? false;
+        assetsAudioPlayer._openPlaylistCurrent(autoStart: isPlaying);
       }
     }
   }
@@ -83,7 +87,8 @@ class PlayerEditor {
   void onAudioAddedAt(int index) {
     assetsAudioPlayer._updatePlaylistIndexes();
     if (assetsAudioPlayer._playlist!.playlistIndex == index) {
-      assetsAudioPlayer._openPlaylistCurrent();
+      final isPlaying = assetsAudioPlayer.isPlaying.valueOrNull ?? false;
+      assetsAudioPlayer._openPlaylistCurrent(autoStart: isPlaying);
     }
   }
 
@@ -201,7 +206,7 @@ class AssetsAudioPlayer {
 
   bool _acceptUserOpen = true; //if false, user cannot call open method
 
-  AssetsAudioPlayer._({this.id = _DEFAULT_PLAYER}) {
+  AssetsAudioPlayer._({this.id = _defaultPlayer}) {
     _init();
   }
 
@@ -232,7 +237,7 @@ class AssetsAudioPlayer {
   /// Create a new player for this audio, play it, and dispose it automatically
   static void playAndForget(Audio audio, {
     double? volume,
-    bool respectSilentMode = _DEFAULT_RESPECT_SILENT_MODE,
+    bool respectSilentMode = _defaultRespectSilentMode,
     Duration? seek,
     double? playSpeed,
   }) {
@@ -394,7 +399,7 @@ class AssetsAudioPlayer {
   ValueStream<double> get volume => _volume.stream;
 
   final BehaviorSubject<LoopMode> _loopMode =
-  BehaviorSubject<LoopMode>.seeded(_DEFAULT_LOOP_MODE);
+  BehaviorSubject<LoopMode>.seeded(_defaultLoopMode);
   final BehaviorSubject<bool> _shuffle = BehaviorSubject<bool>.seeded(false);
 
   /// Called when the looping state changes
@@ -438,7 +443,7 @@ class AssetsAudioPlayer {
 
   bool get stopped => _stopped;
 
-  bool _respectSilentMode = _DEFAULT_RESPECT_SILENT_MODE;
+  bool _respectSilentMode = _defaultRespectSilentMode;
 
   bool get respectSilentMode => _respectSilentMode;
 
@@ -467,7 +472,7 @@ class AssetsAudioPlayer {
   }
 
   /// assign the shuffling state : true -> shuffling, false -> not shuffling
-  set shuffle(value) {
+  set shuffle(bool value) {
     _shuffle.add(value);
   }
 
@@ -540,7 +545,9 @@ class AssetsAudioPlayer {
   void _init() {
     // default action, can be overriden using player.onErrorDo = (error, player) { ACTION };
     onErrorDo = (errorHandler) {
-      print(errorHandler.error.message);
+      if (kDebugMode) {
+        print(errorHandler.error.message);
+      }
       errorHandler.player.stop();
     };
 
@@ -551,7 +558,9 @@ class AssetsAudioPlayer {
       // print('received call ${call.method} with arguments ${call.arguments}');
       switch (call.method) {
         case 'log':
-          print('log: ' + call.arguments);
+          if (kDebugMode) {
+            print('log: ${call.arguments}');
+          }
           break;
         case METHOD_FINISHED:
           await _onFinished(call.arguments);
@@ -645,7 +654,9 @@ class AssetsAudioPlayer {
           }
           break;
         default:
-          print('[ERROR] Channel method ${call.method} not implemented.');
+          if (kDebugMode) {
+            print('[ERROR] Channel method ${call.method} not implemented.');
+          }
       }
     });
     _registerToAppLifecycle();
@@ -1022,14 +1033,14 @@ class AssetsAudioPlayer {
     required AudioFocusStrategy? audioFocusStrategy,
     required NotificationSettings? notificationSettings,
   }) async {
-    final _autoStart = autoStart ?? _DEFAULT_AUTO_START;
-    final _loopMode = loopMode ?? _DEFAULT_LOOP_MODE;
-    final _audioFocusStrategy = audioFocusStrategy ?? defaultFocusStrategy;
+    final autoStartValue = autoStart ?? _defaultAutoStart;
+    final loopModeValue = loopMode ?? _defaultLoopMode;
+    final audioFocusStrategyValue = audioFocusStrategy ?? defaultFocusStrategy;
     final currentAudio = _lastOpenedAssetsAudio;
-    final _headPhoneStrategy = headPhoneStrategy ?? _DEFAULT_HEADPHONE_STRATEGY;
+    final headPhoneStrategyValue = headPhoneStrategy ?? _defaultHeadphoneStrategy;
     if (audioInput != null) {
-      _respectSilentMode = respectSilentMode ?? _DEFAULT_RESPECT_SILENT_MODE;
-      _showNotification = showNotification ?? _DEFAULT_SHOW_NOTIFICATION;
+      _respectSilentMode = respectSilentMode ?? _defaultRespectSilentMode;
+      _showNotification = showNotification ?? _defaultShowNotification;
 
       var audio = await _handlePlatformAsset(audioInput);
       audio = await _downloadOrFetchFromCacheIfNecessary(audio);
@@ -1041,10 +1052,10 @@ class AssetsAudioPlayer {
           'id': id,
           'audioType': audioTypeDescription(audio.audioType),
           'path': audio.path,
-          'autoStart': _autoStart,
+          'autoStart': autoStartValue,
           'respectSilentMode': _respectSilentMode,
-          'headPhoneStrategy': describeHeadPhoneStrategy(_headPhoneStrategy),
-          'audioFocusStrategy': describeAudioFocusStrategy(_audioFocusStrategy),
+          'headPhoneStrategy': describeHeadPhoneStrategy(headPhoneStrategyValue),
+          'audioFocusStrategy': describeAudioFocusStrategy(audioFocusStrategyValue),
           'displayNotification': _showNotification,
           'volume': forcedVolume ?? volume.valueOrNull ?? defaultVolume,
           'playSpeed': playSpeed ??
@@ -1089,7 +1100,7 @@ class AssetsAudioPlayer {
 
         await _sendChannel.invokeMethod('open', params);
 
-        await setLoopMode(_loopMode);
+        await setLoopMode(loopModeValue);
 
         _stopped = false;
         _playlistFinished.add(false);
@@ -1114,9 +1125,13 @@ class AssetsAudioPlayer {
         try {
           await stop();
         } catch (t) {
-          print(t);
+          if (kDebugMode) {
+            print(t);
+          }
         }
-        print(e);
+        if (kDebugMode) {
+          print(e);
+        }
         return Future.error(e);
       }
     }
@@ -1151,17 +1166,17 @@ class AssetsAudioPlayer {
   }
 
   Future<void> _openPlaylist(Playlist playlist, {
-    bool autoStart = _DEFAULT_AUTO_START,
+    bool autoStart = _defaultAutoStart,
     double? volume,
-    bool respectSilentMode = _DEFAULT_RESPECT_SILENT_MODE,
-    bool showNotification = _DEFAULT_SHOW_NOTIFICATION,
+    bool respectSilentMode = _defaultRespectSilentMode,
+    bool showNotification = _defaultShowNotification,
     Duration? seek,
     double? playSpeed,
     double? pitch,
     LoopMode? loopMode,
     NotificationSettings? notificationSettings,
     PlayInBackground? playInBackground,
-    HeadPhoneStrategy headPhoneStrategy = _DEFAULT_HEADPHONE_STRATEGY,
+    HeadPhoneStrategy headPhoneStrategy = _defaultHeadphoneStrategy,
     AudioFocusStrategy? audioFocusStrategy,
   }) async {
     _lastSeek = null;
@@ -1176,7 +1191,7 @@ class AssetsAudioPlayer {
       loopMode: loopMode,
       audioFocusStrategy: audioFocusStrategy ?? defaultFocusStrategy,
       notificationSettings: notificationSettings,
-      playInBackground: playInBackground ?? _DEFAULT_PLAY_IN_BACKGROUND,
+      playInBackground: playInBackground ?? _defaultPlayInBackground,
       headPhoneStrategy: headPhoneStrategy,
     );
     _updatePlaylistIndexes();
@@ -1205,17 +1220,17 @@ class AssetsAudioPlayer {
   ///         - assets/audios/
   ///
   Future<void> open(Playable playable, {
-    bool autoStart = _DEFAULT_AUTO_START,
+    bool autoStart = _defaultAutoStart,
     double? volume,
-    bool respectSilentMode = _DEFAULT_RESPECT_SILENT_MODE,
-    bool showNotification = _DEFAULT_SHOW_NOTIFICATION,
+    bool respectSilentMode = _defaultRespectSilentMode,
+    bool showNotification = _defaultShowNotification,
     Duration? seek,
     double? playSpeed,
     double? pitch,
     NotificationSettings? notificationSettings,
-    LoopMode loopMode = _DEFAULT_LOOP_MODE,
-    PlayInBackground playInBackground = _DEFAULT_PLAY_IN_BACKGROUND,
-    HeadPhoneStrategy headPhoneStrategy = _DEFAULT_HEADPHONE_STRATEGY,
+    LoopMode loopMode = _defaultLoopMode,
+    PlayInBackground playInBackground = _defaultPlayInBackground,
+    HeadPhoneStrategy headPhoneStrategy = _defaultHeadphoneStrategy,
     AudioFocusStrategy? audioFocusStrategy,
     bool forceOpen = false, // skip the _acceptUserOpen
   }) async {

@@ -1,6 +1,7 @@
 import 'dart:async';
 
-import 'package:assets_audio_player/assets_audio_player.dart';
+import 'package:assets_audio_player_plus/assets_audio_player.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:rxdart/rxdart.dart';
 
@@ -9,10 +10,10 @@ typedef PlayerGroupCallback = void Function(
 typedef PlayerGroupMetasCallback = Future<PlayerGroupMetas> Function(
     AssetsAudioPlayerGroup playerGroup, List<PlayingAudio> audios);
 
-const _DEFAULT_RESPECT_SILENT_MODE = false;
-const _DEFAULT_SHOW_NOTIFICATION = false;
-const _DEFAULT_NOTIFICATION_STOP_ENABLED = true;
-const _DEFAULT_PLAY_IN_BACKGROUND = PlayInBackground.enabled;
+const _defaultRespectSilentMode = false;
+const _defaultShowNotification = false;
+const _defaultNotificationStopEnabled = true;
+const _defaultPlayInBackground = PlayInBackground.enabled;
 
 class AudioFinished {
   final AssetsAudioPlayerGroup playerGroup;
@@ -59,19 +60,21 @@ class AssetsAudioPlayerGroup {
   NotificationSettings? __notificationSettings;
 
   AssetsAudioPlayerGroup({
-    this.showNotification = _DEFAULT_SHOW_NOTIFICATION,
+    this.showNotification = _defaultShowNotification,
     required this.updateNotification,
-    this.notificationStopEnabled = _DEFAULT_NOTIFICATION_STOP_ENABLED,
+    this.notificationStopEnabled = _defaultNotificationStopEnabled,
     this.onNotificationOpened,
     this.onNotificationPlay,
     this.onNotificationPause,
     this.onNotificationStop,
-    this.respectSilentMode = _DEFAULT_RESPECT_SILENT_MODE,
-    this.playInBackground = _DEFAULT_PLAY_IN_BACKGROUND,
+    this.respectSilentMode = _defaultRespectSilentMode,
+    this.playInBackground = _defaultPlayInBackground,
   }) {
     // default action, can be overriden using player.onErrorDo = (error, player) { ACTION };
     onErrorDo = (group, errorHandler) {
-      print(errorHandler.error.message);
+      if (kDebugMode) {
+        print(errorHandler.error.message);
+      }
       errorHandler.player.stop();
     };
   }
@@ -274,13 +277,13 @@ class AssetsAudioPlayerGroup {
   }
 
   void dispose() {
-    _subscriptions.forEach((element) {
+    for (final element in _subscriptions) {
       element.cancel();
-    });
+    }
     _subscriptions.clear();
-    players.forEach((element) {
+    for (final element in players) {
       element.dispose();
-    });
+    }
 
     _isPlaying.close();
   }

@@ -1,5 +1,7 @@
 import 'dart:io';
 
+import 'package:flutter/foundation.dart';
+
 import '../playable.dart';
 import 'cache.dart';
 import 'cache_downloader.dart';
@@ -48,7 +50,9 @@ class AssetsAudioPlayerCacheManager {
     String intoPath,
     CacheDownloadListener cacheDownloadListener,
   ) async {
-    print(intoPath);
+    if (kDebugMode) {
+      print(intoPath);
+    }
     if (_downloadingElements.containsKey(intoPath)) {
       // is already downloading it
       final downloader = _downloadingElements[intoPath];

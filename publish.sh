@@ -1,4 +1,4 @@
-cd assets_audio_player_web
+cd assets_audio_player_plus_web
 ./publish.sh
 cd ..
 

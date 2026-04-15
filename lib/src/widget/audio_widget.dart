@@ -18,8 +18,8 @@ class AudioWidget extends StatefulWidget {
   final Function()? onFinished;
   final Duration initialPosition;
 
-  AudioWidget({
-    Key? key,
+  const AudioWidget({
+    super.key,
     required this.audio,
     required this.child,
     this.volume = 1.0,
@@ -29,10 +29,10 @@ class AudioWidget extends StatefulWidget {
     this.initialPosition = const Duration(),
     this.onReadyToPlay,
     this.onFinished,
-  }) : super(key: key);
+  });
 
   AudioWidget.assets({
-    Key? key,
+    super.key,
     required this.child,
     required String path,
     String? package,
@@ -43,11 +43,10 @@ class AudioWidget extends StatefulWidget {
     this.initialPosition = const Duration(),
     this.onReadyToPlay,
     this.onFinished,
-  })  : audio = Audio(path, package: package),
-        super(key: key);
+  }) : audio = Audio(path, package: package);
 
   AudioWidget.network({
-    Key? key,
+    super.key,
     required this.child,
     required String url,
     this.volume = 1.0,
@@ -57,11 +56,10 @@ class AudioWidget extends StatefulWidget {
     this.initialPosition = const Duration(),
     this.onReadyToPlay,
     this.onFinished,
-  })  : audio = Audio.network(url),
-        super(key: key);
+  }) : audio = Audio.network(url);
 
   AudioWidget.file({
-    Key? key,
+    super.key,
     required this.child,
     required String path,
     this.volume = 1.0,
@@ -71,11 +69,10 @@ class AudioWidget extends StatefulWidget {
     this.initialPosition = const Duration(),
     this.onReadyToPlay,
     this.onFinished,
-  })  : audio = Audio.network(path),
-        super(key: key);
+  }) : audio = Audio.network(path);
 
   @override
-  _AudioWidgetState createState() => _AudioWidgetState();
+  State<AudioWidget> createState() => _AudioWidgetState();
 
   AudioWidget copyWith({
     Widget? child,
@@ -107,7 +104,7 @@ class _AudioWidgetState extends State<AudioWidget> {
   StreamSubscription? _currentPositionSubscription;
   StreamSubscription? _onReadyToPlaySubscription;
   StreamSubscription? _playlistAudioFinishedSubscription;
-  late Duration _totalDuration;
+  Duration _totalDuration = Duration.zero;
 
   @override
   void initState() {

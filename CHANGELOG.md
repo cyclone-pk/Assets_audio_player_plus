@@ -1,3 +1,134 @@
+## 3.2.0 — `assets_audio_player_plus` fork (2026-04-14)
+
+First release of the `assets_audio_player_plus` continuation fork. Published by
+[Zakria Khan](https://github.com/cyclone-pk) after the upstream
+`assets_audio_player` package was discontinued on pub.dev.
+
+### Packaging
+
+- **Renamed** `assets_audio_player` → `assets_audio_player_plus`.
+- **Renamed** federated web implementation `assets_audio_player_web` →
+  `assets_audio_player_plus_web`, with `implements: assets_audio_player_plus`
+  correctly wired so Flutter's plugin resolver picks it up.
+- Updated `pubspec.yaml` `homepage:` URLs and all Dart `package:...` imports.
+- `example/pubspec.yaml`: depends on `assets_audio_player_plus: ^3.2.0` with a
+  local `path:` override for development.
+- Native Android/iOS/macOS package paths (`com.github.florent37.*`) left
+  untouched — they're internal and don't affect pub.dev publishing.
+
+### Web platform — restored and modernized
+
+- Restored the web plugin (previously deleted upstream because it used the
+  deprecated `dart:html` API).
+- Migrated `dart:html` → `package:web` + `dart:js_interop` so the plugin
+  compiles to both **JavaScript** (`flutter run -d chrome`) **and
+  WebAssembly** (`flutter build web --wasm`).
+- `WebPlayerHtml.stop()` now fully detaches the old `<audio>` element (clears
+  `src`, calls `load()`, nulls the reference). Fixes a bug where rapid
+  `open()`/`replaceAt()` calls could leave the previous element still playing,
+  producing overlapping audio on web.
+- `findAssetPath()` URL-encodes each path segment, so asset filenames with
+  spaces or unicode no longer 404 in the browser.
+
+### Core plugin fixes
+
+- **`onAudioAddedAt` / `onAudioRemovedAt`** in `lib/src/assets_audio_player.dart`
+  now read the current `isPlaying` state and pass it as `autoStart`, instead
+  of force-starting playback. Previously inserting an item at the current
+  playlist index would always autoplay even if the player was paused.
+- **`AudioWidget` `_totalDuration`**: changed from `late Duration` to
+  `Duration _totalDuration = Duration.zero` so the position callback firing
+  before `onReadyToPlay` no longer throws `LateInitializationError`.
+- **`Audio.copyWith`** now accepts `pitch` — the field was declared on the
+  private constructor but never surfaced on `copyWith`.
+- Added analyzer-clean baseline: `flutter analyze` returns **0 issues** across
+  the plugin, web sub-package, and example.
+
+### Example app — full rewrite
+
+- Removed the `flutter_neumorphic_plus` dependency and the neumorphic look.
+  Replaced with a clean **Material 3** launcher + screens (seeded
+  `ColorScheme.fromSeed(Colors.deepPurple)`, light + dark).
+- Reorganized `example/lib/` into `main.dart` + `demos/` + `widgets/` +
+  `utils/` (snake_case, one demo per file).
+- Dropped outdated `flutter_audio_query` and `flutter_audio_recorder` git
+  dependencies (unmaintained, missing AGP 8 namespace).
+- Regenerated the Android scaffold via `flutter create --org=com.zakriakhan`
+  with the **declarative Gradle plugins block** (modern AGP 8 requirement).
+  Added `POST_NOTIFICATIONS`, `WAKE_LOCK`, `FOREGROUND_SERVICE`,
+  `FOREGROUND_SERVICE_MEDIA_PLAYBACK` permissions, plus the custom
+  `assets.audio.player.notification.icon` metadata and drawables.
+- Added a shared `DemoScaffold` (AppBar + info banner) so every demo is
+  self-documenting.
+
+### Example demo improvements
+
+- **Playlist player**: info banner, empty-state placeholders, error card when
+  `open()` throws, transport controls rendered unconditionally with stream
+  defaults (no longer invisible before first emission).
+- **Streams API / PlayerBuilder helpers**: clarified descriptions; tap-to-play
+  now uses `autoStart: true` and auto-opens the playlist paused.
+- **Insert / replace**: completely redesigned. Live playlist card with
+  highlight for the current track, loader overlay during buffering or pending
+  mutations, explanation text under every action button, seek slider with
+  `mm:ss` timestamps.
+- **Swap playlist source live (update_playlist)**: step-by-step UI — "Current
+  source" card with icon + label that flips from "Network stream" to "Local
+  file / blob URL (swapped)", real-time event log, seek progress maintained
+  across the swap.
+- **Cache network audio**: switched from unreliable `cacheDownloadInfos`
+  stream to explicit `Dio.onReceiveProgress` download. Real percentage + MB
+  counters on both web (blob URL) and Android (temp file). Plays from the
+  cached copy on completion.
+- **Local file**: conditional imports — native path uses `dart:io` +
+  `path_provider`, web uses a `Dio` download into a `package:web` blob URL.
+- **Live stream**: replaced the dead BBC HTTP URL with HTTPS SomaFM Groove
+  Salad. Station card with cover, artist, live status indicator. Now-playing
+  card polls `somafm.com/songs/groovesalad.json` every 20 s with manual
+  refresh button. Graceful fallback on CORS errors.
+- **Update live stream metas**: visible "Current metadata" card reflects
+  `audio.updateMetas()` via `player.current`; play/pause button added.
+- **AudioWidget demo**: rotating vinyl-style cover, progress bar, explicit
+  "Preparing..." loading card while the browser buffers the asset.
+- **Finish-event counters**: renamed from "Counters test", now has a track
+  card with progress bar, two color-coded counter cards, last-event log, and
+  reset button.
+- **Multiple players**: in-code gradient letter tiles (deterministic per
+  track name) replace unreliable network thumbnails that were breaking on
+  some Android emulators with SSL/cert errors.
+
+### Asset housekeeping
+
+- Renamed `assets/audios/2 country.mp3` → `country2.mp3` and `pop test.mp3` →
+  `pop.mp3` to remove spaces that tripped the browser's `<audio src="">`.
+- Used `electronic.mp3` and `pop.mp3` (≈4 MB each) instead of `country.mp3`
+  (11 MB) in the `AudioWidget` and `Insert / replace` demos for faster
+  load times.
+
+### GitHub / CI / docs
+
+- **`.github/workflows/ci.yml`** — `dart format` check, `flutter analyze` on
+  plugin + web + example, `flutter test`, `flutter build web --release` and
+  `--wasm`, `flutter build apk --debug`. Runs on every PR.
+- **`.github/dependabot.yml`** — weekly pub updates across all three
+  packages, monthly Gradle + Actions.
+- **`.github/CODEOWNERS`** — reviews routed to `@cyclone-pk`.
+- **`.github/pull_request_template.md`** — checklist covering formatter,
+  analyze, tests, platforms, Flutter version, screenshots.
+- **`CONTRIBUTING.md`** — full contributor guide (setup, testing
+  expectations, web-specific DDC + WASM requirements, release process).
+- **`README.md`** — added project-status banner, platform test checklist,
+  "Hire me on Fiverr" button, refreshed screenshot strip (s1/s2/s3/s4.png).
+- **`example/README.md`** — rewritten with accurate snippets using the real
+  current API and a table mapping each demo to the APIs it exercises.
+
+### Platform test status at release
+
+- ✅ Web (Chrome JS) — all 14 demos verified
+- ✅ Web (WASM) — `flutter build web --wasm` succeeds
+- ✅ Android — tested on emulator SDK 36
+- ⏳ iOS, macOS, Linux, Windows — pending
+
 ## 3.1.1
 
 - fix startup crash issue for some Android devices.

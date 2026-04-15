@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:assets_audio_player/src/playable.dart';
+import 'package:assets_audio_player_plus/src/playable.dart';
 import 'package:path_provider/path_provider.dart';
 
 typedef CachePathProvider = Future<String> Function(Audio audio, String key);

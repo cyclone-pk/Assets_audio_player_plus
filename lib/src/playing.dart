@@ -1,4 +1,4 @@
-import 'package:assets_audio_player/assets_audio_player.dart';
+import 'package:assets_audio_player_plus/assets_audio_player.dart';
 import 'package:flutter/foundation.dart';
 
 /// Represents the current played audio asset
@@ -94,7 +94,7 @@ class Playing {
   /// the parent playlist
   final ReadingPlaylist playlist;
 
-  Playing({
+  const Playing({
     required this.audio,
     required this.index,
     required this.hasNext,
