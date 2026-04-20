@@ -55,7 +55,7 @@ android {
 
 dependencies {
 
-    def coroutinesVersion = '1.6.4'
+    def coroutinesVersion = '1.10.2'
 
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
     implementation "androidx.multidex:multidex:2.0.1"
